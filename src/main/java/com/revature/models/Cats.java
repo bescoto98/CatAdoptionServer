@@ -22,14 +22,12 @@ public class Cats {
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	private int catid;
 	//use point price to check against user points
-	@Column(nullable=true)
 	private int pointPrice;
 	
 	@ManyToOne(fetch=FetchType.EAGER, cascade=CascadeType.ALL)
 	@JoinColumn(name="userid")
 	private User owner;
 	
-	@Column(nullable=true)
 	private boolean adoptionStatus;
 
 	public Cats() {

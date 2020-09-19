@@ -29,7 +29,6 @@ public class Tasks {
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	public int taskid;
 	public String description;
-	@Column(nullable=true)
 	public boolean completionStatus;
 	//this field tracks the users' frequency of using a certain task
 	//frequency of use
