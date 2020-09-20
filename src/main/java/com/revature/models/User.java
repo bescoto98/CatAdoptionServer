@@ -33,6 +33,7 @@ public class User {
 	private List<Cats> cats;
 	
 	//list of tasks that the user has
+	@JsonManagedReference
 	@OneToMany(mappedBy="doer", fetch=FetchType.LAZY)
 	private List<Tasks> tasks;
 	//tracks the users' points based on login frequency and task completion
@@ -83,6 +84,11 @@ public class User {
 		this.username = username;
 		this.password = password;
 		this.points = points;
+	}
+	
+	public User(int userid) {
+		super();
+		this.userid = userid;
 	}
 
 

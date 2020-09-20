@@ -10,5 +10,5 @@ import com.revature.models.User;
 public interface ITasksDAO extends JpaRepository<Tasks, Integer> {
 
 	List<Tasks> findByDoer(User u);
-	Tasks findByFrequency(int frequency);
+	List<Tasks> findByFrequencyGreaterThan(int frequency);
 }

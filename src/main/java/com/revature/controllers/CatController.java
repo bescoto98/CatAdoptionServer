@@ -27,14 +27,12 @@ import com.revature.repositories.*;
 public class CatController {
 	
 	private IUserDAO udao;
-	private ITasksDAO tdao;
 	private ICatsDAO cdao;
 	
 	@Autowired
-	public CatController(IUserDAO udao, ITasksDAO tdao, ICatsDAO cdao) {
+	public CatController(IUserDAO udao, ICatsDAO cdao) {
 		super();
 		this.udao = udao;
-		this.tdao = tdao;
 		this.cdao = cdao;
 	}
 	

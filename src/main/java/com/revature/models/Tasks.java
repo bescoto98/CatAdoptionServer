@@ -13,6 +13,8 @@ import javax.persistence.Table;
 
 import org.springframework.stereotype.Component;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 /*
  * Task Class: 
  *  - defines fields for tasks created by the user that are persisted
@@ -34,6 +36,7 @@ public class Tasks {
 	//frequency of use
 	public int frequency;
 	
+	@JsonBackReference
 	@ManyToOne(fetch=FetchType.EAGER, cascade=CascadeType.ALL)
 	@JoinColumn(name="userid")
 	private User doer;
