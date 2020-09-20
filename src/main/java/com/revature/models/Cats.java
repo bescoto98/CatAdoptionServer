@@ -13,6 +13,8 @@ import javax.persistence.Table;
 
 import org.springframework.stereotype.Component;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 @Entity
 @Component
 @Table(name="cats")
@@ -26,6 +28,7 @@ public class Cats {
 	
 	@ManyToOne(fetch=FetchType.EAGER, cascade=CascadeType.ALL)
 	@JoinColumn(name="userid")
+	@JsonBackReference
 	private User owner;
 	
 	private boolean adoptionStatus;

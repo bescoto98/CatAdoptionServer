@@ -51,7 +51,18 @@ public class CatController {
 	
 	@GetMapping(value="/{id}")
 	public ResponseEntity<List<Cats>> getUsersCats(@PathVariable("id")int id){
-		return ResponseEntity.status(HttpStatus.OK).body(cdao.findByOwner(id));
+		
+		Optional<User> temp = udao.findById(id);
+		
+		if(temp.isPresent()) {
+			User u = temp.get();
+			return ResponseEntity.status(HttpStatus.OK).body(cdao.findByOwner(u));
+		}
+		else {
+			return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+		}
+		
+		
 	}
 	
 	

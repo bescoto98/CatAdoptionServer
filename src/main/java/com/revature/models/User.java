@@ -11,6 +11,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 import org.springframework.stereotype.Component;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 @Entity 
 @Component 
@@ -27,6 +28,7 @@ public class User {
 	private String profileImage;
 	
 	//list of cats that the user adopts
+	@JsonManagedReference
 	@OneToMany(mappedBy="owner", fetch=FetchType.EAGER)
 	private List<Cats> cats;
 	
