@@ -14,8 +14,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import org.springframework.security.crypto.password.PasswordEncoder;
+
 import com.revature.models.*;
 import com.revature.repositories.*;
+import com.revature.services.*;
 
 @RestController
 @RequestMapping(value="/user")
@@ -26,13 +29,15 @@ public class UserController {
 	private IUserDAO udao;
 	private ITasksDAO tdao;
 	private ICatsDAO cdao;
+	private MagicBox magic;
 	
 	@Autowired
-	public UserController(IUserDAO udao, ITasksDAO tdao, ICatsDAO cdao) {
+	public UserController(IUserDAO udao, ITasksDAO tdao, ICatsDAO cdao, MagicBox magic) {
 		super();
 		this.udao = udao;
 		this.tdao = tdao;
 		this.cdao = cdao;
+		this.magic = magic;
 	}
 	
 	@GetMapping(value="/{id}")
@@ -49,6 +54,12 @@ public class UserController {
 	
 	@PostMapping
 	public ResponseEntity<User> addUser(@RequestBody User u){
+		
+		// encrypting password when a new user is created
+		PasswordEncoder e = magic.getEncoder();
+		String hashed = e.encode(u.getPassword());
+		u.setPassword(hashed);
+		
 		udao.save(u);
 		return ResponseEntity.status(HttpStatus.OK).body(udao.findByUsername(u.getUsername()));
 	}
