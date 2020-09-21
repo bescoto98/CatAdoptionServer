@@ -43,7 +43,17 @@ public class CatController {
 	
 	@PutMapping
 	public ResponseEntity<Optional<Cats>> updateCat(@RequestBody Cats c){
+		Optional<User> tempUser = udao.findById(c.getOwner().getUserid());
+		
+		if(tempUser.isPresent()) {
+			c.setOwner(tempUser.get());
+		}
+		else {
+			return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+		}
+		
 		cdao.save(c);
+		
 		return ResponseEntity.status(HttpStatus.OK).body(cdao.findById(c.getCatid()));
 	}
 	

@@ -2,6 +2,8 @@ package com.revature.controllers;
 
 import java.util.Optional;
 
+import javax.servlet.http.HttpSession;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -9,6 +11,7 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -41,7 +44,12 @@ public class UserController {
 	}
 	
 	@GetMapping(value="/{id}")
-	public ResponseEntity<User> getUser(@PathVariable("id") int id){
+	public ResponseEntity<User> getUser(HttpSession session, @PathVariable("id") int id){
+		
+//		if(session.getAttribute("loggedin") == null) {
+//			return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+//		}
+		
 		Optional<User> temp = udao.findById(id);
 		if(temp.isPresent()) {
 			User u = temp.get();
@@ -62,6 +70,12 @@ public class UserController {
 		
 		udao.save(u);
 		return ResponseEntity.status(HttpStatus.OK).body(udao.findByUsername(u.getUsername()));
+	}
+	
+	@PutMapping
+	public ResponseEntity<Optional<User>> updateUser(@RequestBody User u){
+		udao.save(u);
+		return ResponseEntity.status(HttpStatus.OK).body(udao.findById(u.getUserid()));
 	}
 	
 	

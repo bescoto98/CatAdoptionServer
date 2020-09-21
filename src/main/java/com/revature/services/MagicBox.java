@@ -19,9 +19,5 @@ public class MagicBox {
 	public PasswordEncoder getEncoder() {
 		return encoder;
 	}
-	
-	
-	
-	
 
 }

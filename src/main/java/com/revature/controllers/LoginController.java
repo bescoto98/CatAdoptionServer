@@ -1,5 +1,7 @@
 package com.revature.controllers;
 
+import javax.servlet.http.HttpSession;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -8,7 +10,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import com.revature.models.*;
@@ -32,12 +33,13 @@ public class LoginController {
 	}
 	
 	@PostMapping
-	public ResponseEntity<User> authenticate(@RequestBody UserDTO u){
+	public ResponseEntity<User> authenticate(HttpSession session, @RequestBody UserDTO u){
 		User temp = udao.findByUsername(u.username);
 		
 		PasswordEncoder e = magic.getEncoder();
 		
 		if(e.matches(u.password, temp.getPassword())) {
+//			session.setAttribute("loggedin", true);
 			return ResponseEntity.status(HttpStatus.OK).body(temp);
 		}
 		else {
