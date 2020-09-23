@@ -18,6 +18,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.revature.models.*;
 import com.revature.repositories.*;
+import com.revature.services.CatService;
+import com.revature.services.UserService;
 
 
 @RestController
@@ -26,49 +28,41 @@ import com.revature.repositories.*;
 @ResponseBody
 public class CatController {
 	
-	private IUserDAO udao;
-	private ICatsDAO cdao;
+	private CatService cs;
+	private UserService us;
 	
 	@Autowired
-	public CatController(IUserDAO udao, ICatsDAO cdao) {
+	public CatController(CatService cs, UserService us) {
 		super();
-		this.udao = udao;
-		this.cdao = cdao;
+		this.cs = cs;
+		this.us = us;
 	}
+
 	
 	@GetMapping(value="/adopted")
 	public ResponseEntity<List<Cats>> getAdoptedCats(){
-		return ResponseEntity.status(HttpStatus.OK).body(cdao.findAll());
+		return ResponseEntity.status(HttpStatus.OK).body(cs.findAll());
 	}
 	
 	@PutMapping
-	public ResponseEntity<Optional<Cats>> updateCat(@RequestBody Cats c){
-		Optional<User> tempUser = udao.findById(c.getOwner().getUserid());
+	public ResponseEntity<Cats> updateCat(@RequestBody Cats c){
+		User tempUser = us.findById(c.getOwner().getUserid());
 		
-		if(tempUser.isPresent()) {
-			c.setOwner(tempUser.get());
+		if(tempUser != null) {
+			c.setOwner(tempUser);
+			cs.addCat(c);
+			return ResponseEntity.status(HttpStatus.OK).body(cs.findById(c.getCatid()));
 		}
 		else {
 			return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
 		}
-		
-		cdao.save(c);
-		
-		return ResponseEntity.status(HttpStatus.OK).body(cdao.findById(c.getCatid()));
 	}
 	
 	@GetMapping(value="/{id}")
 	public ResponseEntity<List<Cats>> getUsersCats(@PathVariable("id")int id){
+		User u = us.findById(id);
 		
-		Optional<User> temp = udao.findById(id);
-		
-		if(temp.isPresent()) {
-			User u = temp.get();
-			return ResponseEntity.status(HttpStatus.OK).body(cdao.findByOwner(u));
-		}
-		else {
-			return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
-		}
+		return ResponseEntity.status(HttpStatus.OK).body(cs.findByOwner(u)); 
 		
 		
 	}

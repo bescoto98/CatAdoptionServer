@@ -23,10 +23,10 @@ import com.revature.services.*;
 public class LoginController {
 	
 	private IUserDAO udao;
-	private MagicBox magic;
+	private EncryptionService magic;
 
 	@Autowired
-	public LoginController(IUserDAO udao, MagicBox magic) {
+	public LoginController(IUserDAO udao, EncryptionService magic) {
 		super();
 		this.udao = udao;
 		this.magic = magic;

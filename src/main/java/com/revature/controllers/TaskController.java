@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.revature.models.*;
 import com.revature.repositories.*;
+import com.revature.services.*;
 
 @RestController
 @RequestMapping(value="/task")
@@ -25,64 +26,56 @@ import com.revature.repositories.*;
 @ResponseBody
 public class TaskController {
 	
-	private IUserDAO udao;
-	private ITasksDAO tdao;
-
+	private UserService us;
+	private TaskService ts;
+	
+	
 	@Autowired
-	public TaskController(IUserDAO udao, ITasksDAO tdao) {
+	public TaskController(UserService us, TaskService ts) {
 		super();
-		this.udao = udao;
-		this.tdao = tdao;
+		this.us = us;
+		this.ts = ts;
 	}
 	
 	@PostMapping
 	public ResponseEntity<List<Tasks>> addTask(@RequestBody Tasks t){
-		Optional<User> tempUser = udao.findById(t.getDoer().getUserid());
+		User tempUser = us.findById(t.getDoer().getUserid());
 		
-		if(tempUser.isPresent()) {
-			t.setDoer(tempUser.get());
+		if(tempUser != null) {
+			t.setDoer(tempUser);
+			ts.addTask(t);
+			return ResponseEntity.status(HttpStatus.OK).body(ts.findUserTasks(tempUser));
 		}
 		else {
 			return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
 		}
-		
-		tdao.save(t);
-		
-		return ResponseEntity.status(HttpStatus.OK).body(tdao.findByDoer(t.getDoer()));
 	}
-	
+
 	@PutMapping
 	public ResponseEntity<List<Tasks>> updateTask(@RequestBody Tasks t){
-		Optional<User> tempUser = udao.findById(t.getDoer().getUserid());
+		User tempUser = us.findById(t.getDoer().getUserid());
 		
-		if(tempUser.isPresent()) {
-			t.setDoer(tempUser.get());
+		if(tempUser != null) {
+			t.setDoer(tempUser);
+			ts.addTask(t);
+			return ResponseEntity.status(HttpStatus.OK).body(ts.findUserTasks(tempUser));
 		}
 		else {
 			return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
 		}
-		
-		tdao.save(t);
-		
-		return ResponseEntity.status(HttpStatus.OK).body(tdao.findByDoer(t.getDoer()));
 	}
 	
 	@GetMapping(value="/{id}")
 	public ResponseEntity<List<Tasks>> getUserTasks(@PathVariable("id")int id){
-		Optional<User> temp = udao.findById(id);
 		
-		if(temp.isPresent()) {
-			User u = temp.get();
-			return ResponseEntity.status(HttpStatus.OK).body(tdao.findByDoer(u));
-		}
-		else {
-			return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
-		}
+		User tempUser = us.findById(id);
+		
+		return ResponseEntity.status(HttpStatus.OK).body(ts.findUserTasks(tempUser));
 	}
 	
 	@GetMapping(value="/frequency/{val}")
 	public ResponseEntity<List<Tasks>> getByFrequency(@PathVariable("val")int val){
-		return ResponseEntity.status(HttpStatus.OK).body(tdao.findByFrequencyGreaterThan(val));
+		return ResponseEntity.status(HttpStatus.OK).body(ts.findByFrequency(val));
 	}
 	
 	

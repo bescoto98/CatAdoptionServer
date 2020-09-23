@@ -8,11 +8,11 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 @Service
-public class MagicBox {
+public class EncryptionService {
 	
 	private static BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(10,new SecureRandom());
 	
-	public MagicBox() {
+	public EncryptionService() {
 		super();
 	}
 	

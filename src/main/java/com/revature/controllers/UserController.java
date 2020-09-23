@@ -29,18 +29,14 @@ import com.revature.services.*;
 @ResponseBody
 public class UserController {
 	
-	private IUserDAO udao;
-	private ITasksDAO tdao;
-	private ICatsDAO cdao;
-	private MagicBox magic;
+	private EncryptionService es;
+	private UserService us;
 	
 	@Autowired
-	public UserController(IUserDAO udao, ITasksDAO tdao, ICatsDAO cdao, MagicBox magic) {
+	public UserController(EncryptionService es, UserService us) {
 		super();
-		this.udao = udao;
-		this.tdao = tdao;
-		this.cdao = cdao;
-		this.magic = magic;
+		this.es = es;
+		this.us = us;
 	}
 	
 	@GetMapping(value="/{id}")
@@ -50,32 +46,32 @@ public class UserController {
 //			return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
 //		}
 		
-		Optional<User> temp = udao.findById(id);
-		if(temp.isPresent()) {
-			User u = temp.get();
-			return ResponseEntity.status(HttpStatus.OK).body(u);
+		User temp = us.findById(id);
+		if(temp != null) {
+			return ResponseEntity.status(HttpStatus.OK).body(temp);
 		}
 		else {
 			return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
 		}
 	}
-	
+
+
 	@PostMapping
 	public ResponseEntity<User> addUser(@RequestBody User u){
 		
 		// encrypting password when a new user is created
-		PasswordEncoder e = magic.getEncoder();
+		PasswordEncoder e = es.getEncoder();
 		String hashed = e.encode(u.getPassword());
 		u.setPassword(hashed);
 		
-		udao.save(u);
-		return ResponseEntity.status(HttpStatus.OK).body(udao.findByUsername(u.getUsername()));
+		us.addUser(u);
+		return ResponseEntity.status(HttpStatus.OK).body(us.findByUsername(u.getUsername()));
 	}
 	
 	@PutMapping
-	public ResponseEntity<Optional<User>> updateUser(@RequestBody User u){
-		udao.save(u);
-		return ResponseEntity.status(HttpStatus.OK).body(udao.findById(u.getUserid()));
+	public ResponseEntity<User> updateUser(@RequestBody User u){
+		us.updateUser(u);
+		return ResponseEntity.status(HttpStatus.OK).body(us.findById(u.getUserid()));
 	}
 	
 	
