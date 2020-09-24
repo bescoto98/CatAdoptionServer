@@ -2,8 +2,6 @@ package com.revature.controllers;
 
 import java.util.List;
 
-import javax.servlet.http.HttpSession;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -40,33 +38,23 @@ public class CatController {
 	
 	private CatService cs;
 	private UserService us;
-	private HttpSession session;
 	
 	@Autowired
-	public CatController(CatService cs, UserService us, HttpSession session) {
+	public CatController(CatService cs, UserService us) {
 		super();
 		this.cs = cs;
 		this.us = us;
-		this.session = session;
 	}
 
 	
 	@GetMapping(value="/adopted")
 	public ResponseEntity<List<Cats>> getAdoptedCats(){
 		
-		if(session.getAttribute("loggedin") == null) {
-			return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
-		}
-		
 		return ResponseEntity.status(HttpStatus.OK).body(cs.findAll());
 	}
 	
 	@PutMapping
 	public ResponseEntity<Cats> updateCat(@RequestBody Cats c){
-		
-		if(session.getAttribute("loggedin") == null) {
-			return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
-		}
 		
 		User tempUser = us.findById(c.getOwner().getUserid());
 		
@@ -82,10 +70,6 @@ public class CatController {
 	
 	@GetMapping(value="/{id}")
 	public ResponseEntity<List<Cats>> getUsersCats(@PathVariable("id")int id){
-		
-		if(session.getAttribute("loggedin") == null) {
-			return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
-		}
 		
 		User u = us.findById(id);
 		

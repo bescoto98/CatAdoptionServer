@@ -2,8 +2,6 @@ package com.revature.controllers;
 
 import java.util.List;
 
-import javax.servlet.http.HttpSession;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -41,11 +39,10 @@ public class TaskController {
 	
 	private UserService us;
 	private TaskService ts;
-	private HttpSession session;
 	
 	
 	@Autowired
-	public TaskController(UserService us, TaskService ts, HttpSession session) {
+	public TaskController(UserService us, TaskService ts) {
 		super();
 		this.us = us;
 		this.ts = ts;
@@ -53,10 +50,6 @@ public class TaskController {
 	
 	@PostMapping
 	public ResponseEntity<List<Tasks>> addTask(@RequestBody Tasks t){
-		
-		if(session.getAttribute("loggedin") == null) {
-			return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
-		}
 		
 		User tempUser = us.findById(t.getDoer().getUserid());
 		
@@ -73,10 +66,6 @@ public class TaskController {
 	@PutMapping
 	public ResponseEntity<List<Tasks>> updateTask(@RequestBody Tasks t){
 		
-		if(session.getAttribute("loggedin") == null) {
-			return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
-		}
-		
 		User tempUser = us.findById(t.getDoer().getUserid());
 		
 		if(tempUser != null) {
@@ -92,10 +81,6 @@ public class TaskController {
 	@GetMapping(value="/{id}")
 	public ResponseEntity<List<Tasks>> getUserTasks(@PathVariable("id")int id){
 		
-		if(session.getAttribute("loggedin") == null) {
-			return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
-		}
-		
 		User tempUser = us.findById(id);
 		
 		return ResponseEntity.status(HttpStatus.OK).body(ts.findUserTasks(tempUser));
@@ -104,9 +89,6 @@ public class TaskController {
 	@GetMapping(value="/frequency/{val}")
 	public ResponseEntity<List<Tasks>> getByFrequency(@PathVariable("val")int val){
 		
-		if(session.getAttribute("loggedin") == null) {
-			return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
-		}
 		
 		return ResponseEntity.status(HttpStatus.OK).body(ts.findByFrequency(val));
 	}

@@ -35,11 +35,12 @@ public class LoginController {
 	private HttpSession session;
 	
 	@Autowired
-	public LoginController(LoginService ls, UserService us, HttpSession session) {
+	public LoginController(LoginService ls, UserService us,HttpSession session) {
 		super();
 		this.ls = ls;
 		this.us = us;
 		this.session = session;
+		
 
 	}
 	
@@ -48,6 +49,7 @@ public class LoginController {
 	public ResponseEntity<User> authenticate(@RequestBody UserDTO u){
 		
 		if(ls.authenticate(u.username, u.password)) {
+			
 			session.setAttribute("loggedin", true);
 			return ResponseEntity.status(HttpStatus.OK).body(us.findByUsername(u.username));
 		}

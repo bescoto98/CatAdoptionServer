@@ -1,7 +1,5 @@
 package com.revature.controllers;
 
-import javax.servlet.http.HttpSession;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,7 +12,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
-
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import com.revature.models.*;
@@ -40,22 +37,16 @@ public class UserController {
 	
 	private EncryptionService es;
 	private UserService us;
-	private HttpSession session;
 	
 	@Autowired
-	public UserController(EncryptionService es, UserService us, HttpSession session) {
+	public UserController(EncryptionService es, UserService us) {
 		super();
 		this.es = es;
 		this.us = us;
-		this.session = session;
 	}
 	
 	@GetMapping(value="/{id}")
-	public ResponseEntity<User> getUser(HttpSession session, @PathVariable("id") int id){
-		
-		if(session.getAttribute("loggedin") == null) {
-			return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
-		}
+	public ResponseEntity<User> getUser(@PathVariable("id") int id){
 		
 		User temp = us.findById(id);
 		if(temp != null) {
@@ -81,10 +72,6 @@ public class UserController {
 	
 	@PutMapping
 	public ResponseEntity<User> updateUser(@RequestBody User u){
-		
-		if(session.getAttribute("loggedin") == null) {
-			return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
-		}
 		
 		us.updateUser(u);
 		return ResponseEntity.status(HttpStatus.OK).body(us.findById(u.getUserid()));
