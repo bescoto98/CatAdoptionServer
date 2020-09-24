@@ -22,36 +22,26 @@ import com.revature.services.*;
 @CrossOrigin
 public class LoginController {
 	
-	private IUserDAO udao;
-	private EncryptionService magic;
-
+	private LoginService ls;
+	private UserService us;
+	
 	@Autowired
-	public LoginController(IUserDAO udao, EncryptionService magic) {
+	public LoginController(LoginService ls, UserService us) {
 		super();
-		this.udao = udao;
-		this.magic = magic;
+		this.ls = ls;
+		this.us = us;
+
 	}
 	
 	@PostMapping
 	public ResponseEntity<User> authenticate(HttpSession session, @RequestBody UserDTO u){
-		User temp = udao.findByUsername(u.username);
 		
-		PasswordEncoder e = magic.getEncoder();
-		
-		if(e.matches(u.password, temp.getPassword())) {
-//			session.setAttribute("loggedin", true);
-			return ResponseEntity.status(HttpStatus.OK).body(temp);
+		if(ls.authenticate(u.username, u.password)) {
+			return ResponseEntity.status(HttpStatus.OK).body(us.findByUsername(u.username));
 		}
 		else {
-				return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+			return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
 		}
-	
-//		if(temp.getPassword().equals(u.password)) {
-//			return ResponseEntity.status(HttpStatus.OK).body(temp);
-//		}
-//		else {
-//			return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
-//		}
 		 
 	}
 	
