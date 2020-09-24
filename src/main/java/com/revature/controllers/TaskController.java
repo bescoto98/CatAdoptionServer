@@ -1,7 +1,8 @@
 package com.revature.controllers;
 
 import java.util.List;
-import java.util.Optional;
+
+import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -17,8 +18,20 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.revature.models.*;
-import com.revature.repositories.*;
 import com.revature.services.*;
+
+/**
+ * 
+ * TaskController is used to handle incoming requests involving tasks
+ * mapped to:
+ * 		- /catadoption/task
+ * 
+ * GET	- /{id} 	- returns a user's tasks based on their userid
+ * PUT 	- /			- updates a task based on the taskid given in the request body
+ * POST - /			- adds a task based on the userid given in the request body
+ * GET 	- /frequency/{val}		- returns a list of tasks with a frequency above this value
+ *
+ */
 
 @RestController
 @RequestMapping(value="/task")
@@ -28,10 +41,11 @@ public class TaskController {
 	
 	private UserService us;
 	private TaskService ts;
+	private HttpSession session;
 	
 	
 	@Autowired
-	public TaskController(UserService us, TaskService ts) {
+	public TaskController(UserService us, TaskService ts, HttpSession session) {
 		super();
 		this.us = us;
 		this.ts = ts;
@@ -39,6 +53,11 @@ public class TaskController {
 	
 	@PostMapping
 	public ResponseEntity<List<Tasks>> addTask(@RequestBody Tasks t){
+		
+		if(session.getAttribute("loggedin") == null) {
+			return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+		}
+		
 		User tempUser = us.findById(t.getDoer().getUserid());
 		
 		if(tempUser != null) {
@@ -53,6 +72,11 @@ public class TaskController {
 
 	@PutMapping
 	public ResponseEntity<List<Tasks>> updateTask(@RequestBody Tasks t){
+		
+		if(session.getAttribute("loggedin") == null) {
+			return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+		}
+		
 		User tempUser = us.findById(t.getDoer().getUserid());
 		
 		if(tempUser != null) {
@@ -68,6 +92,10 @@ public class TaskController {
 	@GetMapping(value="/{id}")
 	public ResponseEntity<List<Tasks>> getUserTasks(@PathVariable("id")int id){
 		
+		if(session.getAttribute("loggedin") == null) {
+			return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+		}
+		
 		User tempUser = us.findById(id);
 		
 		return ResponseEntity.status(HttpStatus.OK).body(ts.findUserTasks(tempUser));
@@ -75,6 +103,11 @@ public class TaskController {
 	
 	@GetMapping(value="/frequency/{val}")
 	public ResponseEntity<List<Tasks>> getByFrequency(@PathVariable("val")int val){
+		
+		if(session.getAttribute("loggedin") == null) {
+			return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+		}
+		
 		return ResponseEntity.status(HttpStatus.OK).body(ts.findByFrequency(val));
 	}
 	

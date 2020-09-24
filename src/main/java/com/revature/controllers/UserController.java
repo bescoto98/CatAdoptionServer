@@ -1,7 +1,5 @@
 package com.revature.controllers;
 
-import java.util.Optional;
-
 import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,8 +18,19 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import com.revature.models.*;
-import com.revature.repositories.*;
 import com.revature.services.*;
+
+/**
+ * 
+ * UserController is used to handle incoming requests involving the user
+ * mapped to:
+ * 		- /catadoption/user
+ * 
+ * GET 	- /{id}	- returns user information
+ * POST - /		- used to add a new user
+ * PUT 	- /		- used to update user information
+ *
+ */
 
 @RestController
 @RequestMapping(value="/user")
@@ -31,20 +40,22 @@ public class UserController {
 	
 	private EncryptionService es;
 	private UserService us;
+	private HttpSession session;
 	
 	@Autowired
-	public UserController(EncryptionService es, UserService us) {
+	public UserController(EncryptionService es, UserService us, HttpSession session) {
 		super();
 		this.es = es;
 		this.us = us;
+		this.session = session;
 	}
 	
 	@GetMapping(value="/{id}")
 	public ResponseEntity<User> getUser(HttpSession session, @PathVariable("id") int id){
 		
-//		if(session.getAttribute("loggedin") == null) {
-//			return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
-//		}
+		if(session.getAttribute("loggedin") == null) {
+			return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+		}
 		
 		User temp = us.findById(id);
 		if(temp != null) {
@@ -70,6 +81,11 @@ public class UserController {
 	
 	@PutMapping
 	public ResponseEntity<User> updateUser(@RequestBody User u){
+		
+		if(session.getAttribute("loggedin") == null) {
+			return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+		}
+		
 		us.updateUser(u);
 		return ResponseEntity.status(HttpStatus.OK).body(us.findById(u.getUserid()));
 	}
