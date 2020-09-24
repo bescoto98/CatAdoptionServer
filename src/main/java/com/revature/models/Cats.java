@@ -21,7 +21,6 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 public class Cats {
 	
 	@Id
-	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	private int catid;
 	//use point price to check against user points
 	private int pointPrice;
